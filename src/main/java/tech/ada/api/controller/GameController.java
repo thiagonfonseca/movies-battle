@@ -116,4 +116,17 @@ public class GameController {
         }
     }
 
+    @Operation(summary = "Endpoint que exibe o ranking das partidas", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ranking exibido com sucesso!",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "Usuário não autenticado", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Ocorreu um erro ao exibir o ranking", content = @Content)
+    })
+    @GetMapping("/ranking")
+    public ResponseEntity<GenericResponse> getRanking() {
+        GenericResponse genericResponse = gameService.getRanking();
+        return new ResponseEntity<>(genericResponse, HttpStatus.valueOf(genericResponse.getStatus()));
+    }
+
 }

@@ -15,8 +15,6 @@ import tech.ada.api.exception.NotFoundException;
 import tech.ada.api.response.GenericResponse;
 import tech.ada.api.service.MovieService;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/movie")
 public class MovieController {
@@ -67,7 +65,7 @@ public class MovieController {
     @Operation(summary = "Endpoint que retorna uma lista com os filmes registrados", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de filmes carregado",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado", content = @Content)
     })
     @GetMapping("")
@@ -79,7 +77,7 @@ public class MovieController {
     @Operation(summary = "Endpoint que retorna um filme pelo ID", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Filme encontrado com sucesso",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = MovieDto.class))}),
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado", content = @Content),
             @ApiResponse(responseCode = "404", description = "Filme não encontrado", content = @Content)
     })
@@ -97,7 +95,7 @@ public class MovieController {
     @Operation(summary = "Endpoint que retorna filmes pelo Título", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Filme(s) encontrado(s) com sucesso",
-                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado", content = @Content)
     })
     @GetMapping("/title/{title}")

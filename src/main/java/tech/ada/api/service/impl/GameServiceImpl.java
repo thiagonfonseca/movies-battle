@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import tech.ada.api.dto.AnswerDto;
 import tech.ada.api.dto.GameDto;
 import tech.ada.api.dto.MovieDto;
+import tech.ada.api.dto.RankingDto;
 import tech.ada.api.exception.BadRequestException;
 import tech.ada.api.exception.NotFoundException;
 import tech.ada.api.model.Game;
@@ -155,6 +156,23 @@ public class GameServiceImpl implements GameService {
         msg = "Partida finalizada!";
         log.info(msg);
         return new GenericResponse(HttpStatus.OK.value(), msg);
+    }
+
+    @Override
+    public GenericResponse getRanking() {
+        List<User> users = userRepository.findAll();
+        List<RankingDto> ranking = new ArrayList<>();
+        for (User user : users) {
+            BigDecimal score = BigDecimal.ZERO;
+            List<Game> gamesPlayed = verifyGamesPlayed(user);
+            for (Game game : gamesPlayed) {
+                score = score.add(BigDecimal.valueOf(game.getTotalScore()));
+            }
+            ranking.add(new RankingDto(user.getUsername(), user.getName(), score.doubleValue()));
+        }
+        ranking.sort((r1, r2) -> r2.getTotalScore().compareTo(r1.getTotalScore()));
+        return new GenericResponse(HttpStatus.OK.value(), "Ranking exibido com sucesso!",
+                ranking);
     }
 
     private List<Game> verifyGamesPlayed(User user) {

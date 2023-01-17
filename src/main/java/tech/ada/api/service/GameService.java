@@ -8,4 +8,5 @@ public interface GameService {
     GenericResponse newRound(Long gameId, String username);
     GenericResponse answer(AnswerDto answerDto);
     GenericResponse stopGame(Long gameId, String username);
+    GenericResponse getRanking();
 }
