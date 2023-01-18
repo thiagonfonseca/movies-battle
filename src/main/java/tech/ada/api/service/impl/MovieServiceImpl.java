@@ -102,7 +102,7 @@ public class MovieServiceImpl implements MovieService {
             String msg = "Filme %s registrado/atualizado com sucesso!".formatted(movie.getTitle());
             log.info(msg);
             return new GenericResponse(httpStatus.value(), msg);
-        } catch (HttpClientErrorException | IOException e) {
+        } catch (HttpClientErrorException | IOException | IllegalArgumentException e) {
             throw new BadRequestException("Ocorreu um erro ao registrar/atualizar o filme! " + e.getMessage());
         }
     }

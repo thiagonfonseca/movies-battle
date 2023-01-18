@@ -13,6 +13,6 @@ public class RankingDto {
 
     private String username;
     private String name;
-    private Double totalScore;
+    private Long totalScore;
 
 }

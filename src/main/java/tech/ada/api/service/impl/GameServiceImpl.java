@@ -22,6 +22,7 @@ import tech.ada.api.security.SecurityUtils;
 import tech.ada.api.service.GameService;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -163,12 +164,15 @@ public class GameServiceImpl implements GameService {
         List<User> users = userRepository.findAll();
         List<RankingDto> ranking = new ArrayList<>();
         for (User user : users) {
-            BigDecimal score = BigDecimal.ZERO;
+            BigInteger score = BigInteger.ZERO;
+            BigInteger errors = BigInteger.ZERO;
             List<Game> gamesPlayed = verifyGamesPlayed(user);
             for (Game game : gamesPlayed) {
-                score = score.add(BigDecimal.valueOf(game.getTotalScore()));
+                score = score.add(BigInteger.valueOf(game.getTotalScore()));
+                errors = errors.add(BigInteger.valueOf(game.getTotalErrors()));
             }
-            ranking.add(new RankingDto(user.getUsername(), user.getName(), score.doubleValue()));
+            BigInteger porcentagem = score.multiply(BigInteger.valueOf(100));
+            ranking.add(new RankingDto(user.getUsername(), user.getName(), porcentagem.longValue()));
         }
         ranking.sort((r1, r2) -> r2.getTotalScore().compareTo(r1.getTotalScore()));
         return new GenericResponse(HttpStatus.OK.value(), "Ranking exibido com sucesso!",
@@ -213,10 +217,15 @@ public class GameServiceImpl implements GameService {
         Long firstId = movieRepository.findFirstByOrderByIdAsc().getId();
         Long lastId = movieRepository.findTopByOrderByIdDesc().getId();
         while (!notFound) {
-            id1 = (int) ((Math.random() * (lastId - firstId)) + firstId);
-            if (id1 == 0)
-                continue;
-            id2 = (int) ((Math.random() * (lastId - firstId)) + firstId);
+            if (lastId - firstId == 1) {
+                id1 = firstId.intValue();
+                id2 = lastId.intValue();
+            } else {
+                id1 = (int) ((Math.random() * (lastId - firstId)) + firstId);
+                if (id1 == 0)
+                    continue;
+                id2 = (int) ((Math.random() * (lastId - firstId)) + firstId);
+            }
             if (id2 == 0 || id1 == id2)
                 continue;
             boolean found = false;
