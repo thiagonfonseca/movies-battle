@@ -22,17 +22,25 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+	implementation 'io.cucumber:cucumber-java:7.12.0'
+	implementation 'io.cucumber:cucumber-spring:7.12.0'
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+	testImplementation 'io.cucumber:cucumber-junit:7.12.0'
+	testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.9.3'
 	testCompileOnly 'org.projectlombok:lombok:1.18.24'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+configurations {
+	cucumberRuntime {
+		extendsFrom testImplementation
+	}
 }
