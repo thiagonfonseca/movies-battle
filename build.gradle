@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.0.1'
 	id 'io.spring.dependency-management' version '1.1.0'
+	id 'jacoco'
+	id "org.sonarqube" version "3.5.0.2730"
 }
 
 group = 'tech.ada'
@@ -18,12 +20,16 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-devtools'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 	implementation 'io.cucumber:cucumber-java:7.12.0'
 	implementation 'io.cucumber:cucumber-spring:7.12.0'
+	implementation 'org.seleniumhq.selenium:selenium-chrome-driver'
+	implementation 'org.jacoco:jacoco-maven-plugin:0.8.8'
+	implementation 'org.apache.maven.reporting:maven-reporting-impl:4.0.0-M8'
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 	runtimeOnly 'com.h2database:h2'
@@ -37,10 +43,58 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
+	jacoco {
+		destinationFile = layout.buildDirectory.file("jacoco/jacocoTest.exec").get().asFile
+		classDumpDir = layout.buildDirectory.dir("jacoco/classpathdumps").get().asFile
+	}
 }
 
+tasks.jacocoTestReport {
+	dependsOn(tasks.test) // tests are required to run before generating the report
+	reports {
+		xml.required.set(false)
+		csv.required.set(false)
+		html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.5
+			}
+		}
+
+		rule {
+			enabled = false
+			element = 'CLASS'
+			includes = ['org.gradle.*']
+
+			limit {
+				counter = 'LINE'
+				value = 'TOTALCOUNT'
+				maximum = 0.3
+			}
+		}
+	}
+}
+
+jacoco {
+	toolVersion = "0.8.8"
+	reportsDirectory.set(layout.buildDirectory.dir("customJacocoReportDir"))
+}
 configurations {
 	cucumberRuntime {
 		extendsFrom testImplementation
+	}
+}
+
+sonarqube {
+	properties {
+		property "sonar.projectKey", "moviesbattle"
+		property "sonar.organization", "tnf"
+		property "sonar.host.url", "https://sonarcloud.io"
 	}
 }
